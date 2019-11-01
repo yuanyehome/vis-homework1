@@ -1177,12 +1177,7 @@ function initializeDetailData() {
             return (i % 2 == 0) ? linear_all(d) : linear_pass(d);
         })
         .attr("fill", function (d, i) {
-            if (i % 2 == 0) {
-                return color[0];
-            }
-            else {
-                return color[1];
-            }
+            return color[i % 2];
         })
         .attr("class", "svg-DetailData-main")
         .attr("onclick", function (d, i) {
@@ -1244,7 +1239,7 @@ function initializeDetailData() {
         .attr("alignment-baseline", "middle")
     svg.append("text")
         .attr("x", 20 + left).attr("y", 100)
-        .text("金额(万元)")
+        .text("项数(个)")
         .style("font-size", "15px")
         .attr("alignment-baseline", "middle")
     svg.append("text")
@@ -1253,12 +1248,22 @@ function initializeDetailData() {
         .style("font-size", "30px")
         .attr("alignment-baseline", "middle")
     for (key in all_data['detailed_data']) {
+        var local_settings = {
+            upper: 50,
+            bottom: 50,
+            left: 50,
+            right: 50,
+        }
+        var rect_settings = {
+            width: 24,
+            space: 4,
+        }
         var item = all_data['detailed_data'][key];
         console.log(d3.selectAll("#DetailData-Modal"))
         var modal_svg = d3.select("#DetailData-Modal").select("div")
             .append("svg")          //添加一个svg元素
-            .attr("width", 500)       //设定宽度
-            .attr("height", 500)    //设定高度
+            .attr("width", 550)       //设定宽度
+            .attr("height", 550)    //设定高度
             .attr("style", "text-align: center; display: none")
             .attr("id", "DetailData-Modal" + key);
         var modal_all = [];
@@ -1270,12 +1275,42 @@ function initializeDetailData() {
             modal_pass.push(item[key2]['批准项数']);
             modal_mixed.push(item[key2]['批准项数']);
         }
+        console.log(modal_all);
+        console.log(modal_pass);
+        console.log(modal_mixed);
+        rect_settings['min'] = d3.min(modal_mixed);
+        rect_settings['max'] = d3.max(modal_mixed);
+        rect_settings['left-margin'] = (550 - rect_settings['width'] * modal_mixed.length) / 2
+        rect_settings['scale_func'] = d3.scaleLinear()
+            .domain([0, rect_settings['max']])
+            .range([0, 550 - local_settings['upper'] - local_settings['bottom']]);
         modal_svg.append("text")
             .attr("x", 10)
             .attr("y", 10)
-            .text("测试" + key)
+            .text("\"" + key + "\"" + "资金明细")
             .style("font-size", "15px")
             .attr("alignment-baseline", "middle")
+        modal_svg.selectAll("myrect" + key)
+            .data(modal_mixed)
+            .enter()
+            .append("rect")
+            .attr("x", function (d, i) {
+                return (rect_settings['left-margin'] +
+                    ((i % 2 == 0) ?
+                        (i * rect_settings['width'] - rect_settings['space'])
+                        : (i * rect_settings['width'] - 2 * rect_settings['space'])));
+            })
+            .attr("y", function (d, i) {
+                return 550 - rect_settings['scale_func'](d) - local_settings['bottom'];
+            })
+            .attr("width", rect_settings['width'] - rect_settings['space'])
+            .attr("height", function (d, i) {
+                return rect_settings['scale_func'](d);
+            })
+            .attr("fill", function (d, i) {
+                return color[i % 2];
+            })
+            .attr("class", "svg-DetailData-main" + key);
     }
 }
 
