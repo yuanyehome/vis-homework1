@@ -1081,38 +1081,86 @@ function handleLocData() {
     console.log('loc_data');
 }
 
+function handleclick() {
+    // 获取弹窗
+    var modal = document.getElementById('myModal');
+    modal.style.display = 'block';
+}
+
 function initializeData() {
-    var width = 600;  //画布的宽度
+    var alignment = 80
+    var width = 1000;  //画布的宽度
     var height = 600;   //画布的高度
 
-    var dataset = [1.2, 2.3, 0.9, 1.5, 3.3];
-    var min = d3.min(dataset);
-    var max = d3.max(dataset);
-
-    var linear = d3.scaleLinear()
+    var detailed_data_all = [];
+    var detailed_data_pass = [];
+    for (key in all_data['detailed_data']) {
+        item = all_data['detailed_data'][key];
+        var sum_all = 0;
+        var sum_pass = 0;
+        for (key2 in item) {
+            sum_all += item[key2]['受理项数'];
+            sum_pass += item[key2]['批准项数'];
+        }
+        detailed_data_all.push(sum_all);
+        detailed_data_pass.push(sum_pass);
+    }
+    console.log(detailed_data_all);
+    console.log(detailed_data_pass);
+    var detailed_data_mixed = [];
+    for (let i = 0; i < detailed_data_all.length; ++i) {
+        detailed_data_mixed.push(detailed_data_all[i]);
+        detailed_data_mixed.push(detailed_data_pass[i]);
+    }
+    console.log(detailed_data_mixed);
+    var min = d3.min(detailed_data_mixed);
+    var max = d3.max(detailed_data_mixed);
+    var yScale = d3.scaleLinear()
         .domain([min, max])
-        .range([100, 600]);
+        .range([600, 0]);
+
+    var linear_all = d3.scaleLinear()
+        .domain([min, max])
+        .range([20, 600]);
+    // var linear_pass = d3.scaleLinear()
+    //     .domain([d3.min(detailed_data_pass), d3.max(detailed_data_pass)])
+    //     .range([10, 100])
+    var linear_pass = linear_all;
+    var yAxis = d3.axisLeft(yScale);
+
     var svg = d3.select("body")     //选择文档中的body元素
         .append("svg")          //添加一个svg元素
         .attr("width", width)       //设定宽度
         .attr("height", height)    //设定高度
-        .attr("style", "text-align:center; display: none")
+        .attr("style", "text-align:center; ")
         .attr("id", "test-svg");
     var rectHeight = 50;   //每个矩形所占的像素高度(包括空白)
 
-    svg.selectAll("rect")
-        .data(dataset)
+    svg.selectAll("myrect")
+        .data(detailed_data_mixed)
         .enter()
         .append("rect")
         .attr("x", function (d, i) {
-            return i * rectHeight;
+            return alignment + ((i % 2 == 0) ? i * rectHeight : (i * rectHeight - 10));
         })
         .attr("y", function (d, i) {
-            return height - linear(d);
+            return height - ((i % 2 == 0) ? linear_all(d) : linear_pass(d));
         })
         .attr("width", rectHeight - 10)
-        .attr("height", function (d) {
-            return linear(d);
+        .attr("height", function (d, i) {
+            return (i % 2 == 0) ? linear_all(d) : linear_pass(d);
         })
-        .attr("fill", "steelblue");
+        .attr("fill", function (d, i) {
+            if (i % 2 == 0) {
+                return "green";
+            }
+            else {
+                return "blue";
+            }
+        })
+        .attr("onclick", "handleclick()");
+    svg.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(50, 0)")
+        .call(yAxis);
 }
