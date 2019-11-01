@@ -27,7 +27,8 @@
             margin: 15% auto;
             padding: 20px;
             border: 1px solid #888;
-            width: 80%;
+            width: 600px;
+            height: 600px;
         }
 
         /* 关闭按钮 */
@@ -81,31 +82,32 @@
     </div>
     <form name="select form" style="margin-bottom: 50px;">
         <select id='select table' onchange="tableChangeCallback(this.options[selectedIndex].value)"
-            style="font-size: 20px">
+            style="font-size: 20px; height: 32px;">
             <option value="统计明细">统计明细</option>
             <option value="按单位隶属关系统计">按单位隶属关系统计</option>
             <option value="按单位性质统计">按单位性质统计</option>
             <option value="按地区统计">按地区统计</option>
         </select>
     </form>
-    <script>
-        initializeData();
-    </script>
-    <div id="myModal" class="modal">
+    <div id="DetailData-Modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <p>弹窗中的文本...</p>
         </div>
     </div>
     <script>
-        var modal = document.getElementById('myModal');
+        initializeData();
+    </script>
+    <script>
+        var modal = document.getElementById('DetailData-Modal');
         var span = document.querySelector('.close');
         span.onclick = function () {
             modal.style.display = "none";
+            d3.select("#DetailData-Modal" + curr_key).style("display", "none");
         }
         window.onclick = function (event) {
             if (event.target == modal) {
                 modal.style.display = "none";
+                d3.select("#DetailData-Modal" + curr_key).style("display", "none");
             }
         }
     </script>

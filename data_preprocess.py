@@ -63,17 +63,6 @@ for i in range(len(tmp_loc)):
     item = tmp_loc[i]
     for j in range(len(item)):
         loc_data_json[item[0]][loc_row_keys[j]] = item[j]
-
-
-# %%
-# with open('detailed_data.json', 'w', encoding='utf-8') as f:
-#     json.dump(detailed_data_json, f, ensure_ascii=False)
-# with open('corr_data.json', 'w', encoding='utf-8') as f:
-#     json.dump(corr_data_json, f, ensure_ascii=False)
-# with open('prop_data.json', 'w', encoding='utf-8') as f:
-#     json.dump(prop_data_json, f, ensure_ascii=False)
-# with open('loc_data.json', 'w', encoding='utf-8') as f:
-#     json.dump(loc_data_json, f, ensure_ascii=False)
 all_data = {
     'detailed_data': detailed_data_json,
     'corr_data': corr_data_json,

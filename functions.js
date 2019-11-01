@@ -1064,6 +1064,10 @@ var all_data = {
     }
 }
 
+var all_keys = ['数理科学部', '化学科学部', '生命科学部', '地球科学部',
+    '工程与材料科学部', '信息科学部', '管理科学部', '医学科学部'];
+var all_modals = [];
+var curr_key;
 
 function handleDetailData() {
     console.log('detail_data')
@@ -1081,16 +1085,25 @@ function handleLocData() {
     console.log('loc_data');
 }
 
-function handleclick() {
+function handleclick(key_i) {
     // 获取弹窗
-    var modal = document.getElementById('myModal');
+    console.log(key_i);
+    var key = all_keys[Math.floor(key_i / 2)];
+    curr_key = key
+    var modal = document.getElementById('DetailData-Modal');
     modal.style.display = 'block';
+    d3.select("#DetailData-Modal" + key).style("display", "block");
 }
 
-function initializeData() {
+function initializeDetailData() {
+    var upper = 120;
+    var bottom = 100;
+    var left = 200;
+    var color = ['#5DC0E1', '#5DE180']
     var alignment = 80
-    var width = 1000;  //画布的宽度
-    var height = 600;   //画布的高度
+    var width = 1200;  //画布的宽度
+    var height = 800;   //画布的高度
+    var rectHeight = 50;   //每个矩形所占的像素高度(包括空白)
 
     var detailed_data_all = [];
     var detailed_data_pass = [];
@@ -1117,34 +1130,47 @@ function initializeData() {
     var max = d3.max(detailed_data_mixed);
     var yScale = d3.scaleLinear()
         .domain([min, max])
-        .range([600, 0]);
+        .range([height - upper - bottom, 0]);
 
     var linear_all = d3.scaleLinear()
-        .domain([min, max])
-        .range([20, 600]);
+        .domain([0, max])
+        .range([0, height - upper - bottom]);
     // var linear_pass = d3.scaleLinear()
     //     .domain([d3.min(detailed_data_pass), d3.max(detailed_data_pass)])
     //     .range([10, 100])
     var linear_pass = linear_all;
     var yAxis = d3.axisLeft(yScale);
+    let blank_tmp = alignment / 2;
+    let x = d3.scaleOrdinal().range([0
+        , 1 * rectHeight - 10 + blank_tmp
+        , 3 * rectHeight - 10 + blank_tmp
+        , 5 * rectHeight - 10 + blank_tmp
+        , 7 * rectHeight - 10 + blank_tmp
+        , 9 * rectHeight - 10 + blank_tmp
+        , 11 * rectHeight - 10 + blank_tmp
+        , 13 * rectHeight - 10 + blank_tmp
+        , 15 * rectHeight - 10 + blank_tmp]);
+    let xScale = x.domain(['', '数理科学部', '化学科学部', '生命科学部', '地球科学部',
+        '工程与材料科学部', '信息科学部', '管理科学部', '医学科学部'])
+
+    var xAxis = d3.axisBottom(xScale);
 
     var svg = d3.select("body")     //选择文档中的body元素
         .append("svg")          //添加一个svg元素
         .attr("width", width)       //设定宽度
         .attr("height", height)    //设定高度
-        .attr("style", "text-align:center; ")
-        .attr("id", "test-svg");
-    var rectHeight = 50;   //每个矩形所占的像素高度(包括空白)
+        .attr("style", "text-align:center; display: block")
+        .attr("id", "svg-DetailData-main");
 
     svg.selectAll("myrect")
         .data(detailed_data_mixed)
         .enter()
         .append("rect")
         .attr("x", function (d, i) {
-            return alignment + ((i % 2 == 0) ? i * rectHeight : (i * rectHeight - 10));
+            return left + alignment + ((i % 2 == 0) ? i * rectHeight : (i * rectHeight - 10));
         })
         .attr("y", function (d, i) {
-            return height - ((i % 2 == 0) ? linear_all(d) : linear_pass(d));
+            return height - ((i % 2 == 0) ? linear_all(d) : linear_pass(d)) - bottom;
         })
         .attr("width", rectHeight - 10)
         .attr("height", function (d, i) {
@@ -1152,15 +1178,108 @@ function initializeData() {
         })
         .attr("fill", function (d, i) {
             if (i % 2 == 0) {
-                return "green";
+                return color[0];
             }
             else {
-                return "blue";
+                return color[1];
             }
         })
-        .attr("onclick", "handleclick()");
+        .attr("class", "svg-DetailData-main")
+        .attr("onclick", function (d, i) {
+            return "handleclick(" + i + ")";
+        });
+    svg.selectAll("myrect")
+        .data(detailed_data_mixed)
+        .enter()
+        .append("text")
+        .attr("class", "mytext")
+        .attr("transform", "translate(" + (left + alignment) + "," + upper + ")")
+        .attr("x", function (d, i) {
+            let tmp = 0;
+            if (d >= 1000) tmp = 0;
+            else if (d >= 100) tmp = 5;
+            else tmp = 10;
+            return ((i % 2 == 0) ? i * rectHeight : (i * rectHeight - 10)) + tmp;
+        })
+        .attr("y", function (d) {
+            let tmp = 0;
+            if (d < 100) tmp = 5;
+            return yScale(d) - 10 - tmp;
+        })
+        .attr("alignment-baseline", "middle")
+        .text(function (d) {
+            return d;
+        });
     svg.append("g")
-        .attr("class", "axis")
-        .attr("transform", "translate(50, 0)")
+        .attr("class", "Yaxis")
+        .attr("transform", "translate(" + (left + alignment / 2) + "," + upper + " )")
         .call(yAxis);
+    svg.append("g")
+        .attr("class", "Xaxis")
+        .attr("transform", "translate(" + (left + alignment / 2) + "," + (height - bottom) + " )")
+        .call(xAxis)
+        .style("font-size", "10px");
+    svg.append("rect")
+        .attr("x", 800 + left)
+        .attr("y", 20)
+        .attr("width", 60)
+        .attr("height", 20)
+        .style("fill", color[0]);
+    svg.append("rect")
+        .attr("x", 800 + left)
+        .attr("y", 50)
+        .attr("width", 60)
+        .attr("height", 20)
+        .style("fill", color[1]);
+    svg.append("text")
+        .attr("x", 880 + left)
+        .attr("y", 30)
+        .text("全部申请")
+        .style("font-size", "15px")
+        .attr("alignment-baseline", "middle")
+    svg.append("text")
+        .attr("x", 880 + left)
+        .attr("y", 60).text("已批准申请")
+        .style("font-size", "15px")
+        .attr("alignment-baseline", "middle")
+    svg.append("text")
+        .attr("x", 20 + left).attr("y", 100)
+        .text("金额(万元)")
+        .style("font-size", "15px")
+        .attr("alignment-baseline", "middle")
+    svg.append("text")
+        .attr("x", 20 + left + 5 * rectHeight).attr("y", 20)
+        .text("点击矩形可以获得详细信息")
+        .style("font-size", "30px")
+        .attr("alignment-baseline", "middle")
+    for (key in all_data['detailed_data']) {
+        var item = all_data['detailed_data'][key];
+        console.log(d3.selectAll("#DetailData-Modal"))
+        var modal_svg = d3.select("#DetailData-Modal").select("div")
+            .append("svg")          //添加一个svg元素
+            .attr("width", 500)       //设定宽度
+            .attr("height", 500)    //设定高度
+            .attr("style", "text-align: center; display: none")
+            .attr("id", "DetailData-Modal" + key);
+        var modal_all = [];
+        var modal_pass = [];
+        var modal_mixed = [];
+        for (key2 in item) {
+            modal_all.push(item[key2]['受理项数']);
+            modal_mixed.push(item[key2]['受理项数']);
+            modal_pass.push(item[key2]['批准项数']);
+            modal_mixed.push(item[key2]['批准项数']);
+        }
+        modal_svg.append("text")
+            .attr("x", 10)
+            .attr("y", 10)
+            .text("测试" + key)
+            .style("font-size", "15px")
+            .attr("alignment-baseline", "middle")
+    }
+}
+
+function initializeData() {
+
+    initializeDetailData();
 }
