@@ -1068,12 +1068,18 @@ var all_keys = ['数理科学部', '化学科学部', '生命科学部', '地球
     '工程与材料科学部', '信息科学部', '管理科学部', '医学科学部'];
 var all_modals = [];
 var curr_key;
+var corrdata = 0;
+var propdata = 0;
 
 function handleDetailData() {
+    d3.select("#svg-CorrData-main1").style("display", "none");
+    d3.select("#svg-DetailData-main").style("display", "block");
     console.log('detail_data')
 }
 
 function handleCorrData() {
+    d3.select("#svg-DetailData-main").style("display", "none");
+    d3.select("#svg-CorrData-main1").style("display", "block");
     console.log('corr_data');
 }
 
@@ -1087,7 +1093,7 @@ function handleLocData() {
 
 function handleclick(key_i) {
     // 获取弹窗
-    console.log(key_i);
+    // console.log(key_i);
     var key = all_keys[Math.floor(key_i / 2)];
     curr_key = key
     var modal = document.getElementById('DetailData-Modal');
@@ -1096,6 +1102,7 @@ function handleclick(key_i) {
 }
 
 function initializeDetailData() {
+    console.log("initializing detail data")
     var upper = 120;
     var bottom = 100;
     var left = 200;
@@ -1118,14 +1125,14 @@ function initializeDetailData() {
         detailed_data_all.push(sum_all);
         detailed_data_pass.push(sum_pass);
     }
-    console.log(detailed_data_all);
-    console.log(detailed_data_pass);
+    // console.log(detailed_data_all);
+    // console.log(detailed_data_pass);
     var detailed_data_mixed = [];
     for (let i = 0; i < detailed_data_all.length; ++i) {
         detailed_data_mixed.push(detailed_data_all[i]);
         detailed_data_mixed.push(detailed_data_pass[i]);
     }
-    console.log(detailed_data_mixed);
+    // console.log(detailed_data_mixed);
     var min = d3.min(detailed_data_mixed);
     var max = d3.max(detailed_data_mixed);
     var yScale = d3.scaleLinear()
@@ -1159,7 +1166,7 @@ function initializeDetailData() {
         .append("svg")          //添加一个svg元素
         .attr("width", width)       //设定宽度
         .attr("height", height)    //设定高度
-        .attr("style", "text-align:center; display: block")
+        .attr("style", "text-align:center; display: none")
         .attr("id", "svg-DetailData-main");
 
     svg.selectAll("myrect")
@@ -1260,7 +1267,7 @@ function initializeDetailData() {
             space: 4,
         }
         var item = all_data['detailed_data'][key];
-        console.log(d3.selectAll("#DetailData-Modal"))
+        // console.log(d3.selectAll("#DetailData-Modal"))
         var modal_svg = d3.select("#DetailData-Modal").select("div")
             .append("svg")          //添加一个svg元素
             .attr("width", 550)       //设定宽度
@@ -1282,9 +1289,9 @@ function initializeDetailData() {
             modal_pass.push(item[key2]['批准项数']);
             modal_mixed.push(item[key2]['批准项数']);
         }
-        console.log(modal_all);
-        console.log(modal_pass);
-        console.log(modal_mixed);
+        // console.log(modal_all);
+        // console.log(modal_pass);
+        // console.log(modal_mixed);
         rect_settings['min'] = d3.min(modal_mixed);
         rect_settings['max'] = d3.max(modal_mixed);
         rect_settings['left-margin'] = (550 - rect_settings['width'] * modal_mixed.length) / 2
@@ -1300,8 +1307,8 @@ function initializeDetailData() {
             rect_settings['px_scale']
                 .push(5 + (2 * i + 1) * rect_settings['width'] - rect_settings['space']);
         }
-        console.log(rect_settings['px_scale'])
-        console.log(key2s)
+        // console.log(rect_settings['px_scale'])
+        // console.log(key2s)
         let tmp_xScale = d3.scaleOrdinal().range(rect_settings['px_scale']).domain(key2s);
         rect_settings['xAxis'] = d3.axisBottom(tmp_xScale);
         modal_svg.append("text")
@@ -1367,6 +1374,89 @@ function initializeDetailData() {
     }
 }
 
+function initializeCorrData() {
+    console.log("initializing corr data");
+    var svg_settings = {
+        width: 1200,
+        height: 800,
+    };
+    var rect_settings = {
+        leftmargin: 100,
+        upper: 100,
+        bottom: 100,
+        width: 30,
+        space: 10,
+    };
+    var corr_color = ['red', 'blue', 'grenn', 'black']
+    var legend_keys = ['教育部项数', '中国科学院项数', '工交农医国防等项数', '各省项数']
+    var svg = d3.select("body")     //选择文档中的body元素
+        .append("svg")          //添加一个svg元素
+        .attr("width", svg_settings['width'])       //设定宽度
+        .attr("height", svg_settings['height'])    //设定高度
+        .attr("style", "text-align:center; display: none")
+        .attr("id", "svg-CorrData-main1");
+    var corr_data_mixed = [];
+    var multiply = [];
+    var tmp_cnt = 0;
+    var sums = [];
+    for (key in all_data['corr_data']) {
+        item = all_data['corr_data'][key];
+        for (key2 in legend_keys) {
+            corr_data_mixed.push(item[legend_keys[key2]]);
+            multiply.push(Math.floor(tmp_cnt / 4));
+            tmp_cnt += 1;
+        }
+        sums.push(item["合计项数"])
+    }
+    console.log(corr_data_mixed)
+    console.log(multiply)
+    var linear_func = d3.scaleLinear()
+        .domain([0, d3.max(sums)])
+        .range([0, svg_settings['height'] - rect_settings['upper'] - rect_settings['bottom']]);
+    svg.selectAll("myrect-corr-data")
+        .data(corr_data_mixed)
+        .enter()
+        .append("rect")
+        .attr("x", function (d, i) {
+            return rect_settings["leftmargin"] + multiply[i] * rect_settings["width"];
+        })
+        .attr("y", function (d, i) {
+            let tmp = 0;
+            for (let j = 0; j < i; ++j) {
+                tmp += linear_func(corr_data_mixed[4 * Math.floor(i / 4) + j]);
+            }
+            return svg_settings['height'] - sums[Math.floor(i / 4)]
+                + tmp -
+                rect_settings['bottom'];
+        })
+        .attr("width", rect_settings["width"] - rect_settings["space"])
+        .attr("height", function (d, i) {
+            return linear_func(d);
+        })
+        .attr("fill", function (d, i) {
+            return corr_color[i % 4];
+        })
+        .attr("class", "svg-DetailData-main")
+        .attr("onclick", function (d, i) {
+            return "handleclick(" + i + ")";
+        })
+        .style("cursor", "pointer")
+        .append("title")
+        .text("点击查看详情");
+}
+
+function initializePropData() {
+    console.log("initializing prop data");
+}
+
+function initializeLocData() {
+    console.log("initializing loc data");
+}
+
 function initializeData() {
     initializeDetailData();
+    initializeCorrData();
+    initializePropData();
+    initializeLocData();
+    handleDetailData();
 }
