@@ -61,12 +61,24 @@
     <script>
         function tableChangeCallback(value) {
             if (value == '统计明细') {
+                d3.select("#axis_button")
+                    .attr("disabled", "disabled")
+                    .style("cursor", "no-drop")
+                    .attr("curr_value", "detail_data");
                 handleDetailData();
             }
             else if (value == '按单位隶属关系统计') {
+                d3.select("#axis_button")
+                    .attr("disabled", null)
+                    .style("cursor", "pointer")
+                    .attr("curr_value", "corr_data");
                 handleCorrData();
             }
             else if (value == '按单位性质统计') {
+                d3.select("#axis_button")
+                    .attr("disabled", null)
+                    .style("cursor", "pointer")
+                    .attr("curr_value", "prop_data");
                 handlePropData();
             }
             else if (value == '按地区统计') {
@@ -80,15 +92,29 @@
     <div style="font-size: 24px; margin-bottom: 20px;">
         请选择要查阅的表格：
     </div>
-    <form name="select form" style="margin-bottom: 50px;">
-        <select id='select table' onchange="tableChangeCallback(this.options[selectedIndex].value)"
-            style="font-size: 20px; height: 32px;">
-            <option value="统计明细">统计明细</option>
-            <option value="按单位隶属关系统计">按单位隶属关系统计</option>
-            <option value="按单位性质统计">按单位性质统计</option>
-            <option value="按地区统计">按地区统计</option>
-        </select>
-    </form>
+    <div style="float: left; margin-right: 20;">
+        <form name="select form" style="margin-bottom: 50px;">
+            <select id='select table' onchange="tableChangeCallback(this.options[selectedIndex].value)"
+                style="font-size: 20px; height: 32px;cursor: pointer;">
+                <option value="统计明细">统计明细</option>
+                <option value="按单位隶属关系统计">按单位隶属关系统计</option>
+                <option value="按单位性质统计">按单位性质统计</option>
+                <option value="按地区统计">按地区统计</option>
+            </select>
+        </form>
+    </div>
+    <div style="float: left; margin-right: 20;">
+        <button style="font-size: 20px; height: 32px;cursor: pointer;" onclick="handleNumberClick()" id="number_button"
+            curr="display">
+            隐藏数字
+        </button>
+    </div>
+    <div style="float: left;">
+        <button style="font-size: 20px; height: 32px;cursor: no-drop;" onclick="handleAxisChangeClick()"
+            id="axis_button" curr_corr="0" curr_prop="0" disabled="disabled">
+            切换坐标轴
+        </button>
+    </div>
     <div id="DetailData-Modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>

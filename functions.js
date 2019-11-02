@@ -1,4 +1,4 @@
-var all_data = {
+const all_data = {
     "detailed_data": {
         "数理科学部": {
             "数学": {
@@ -1072,18 +1072,31 @@ var corrdata = 0;
 var propdata = 0;
 
 function handleDetailData() {
-    d3.select("#svg-CorrData-main1").style("display", "none");
+    d3.select("#corr_data0").style("display", "none");
+    d3.select("#corr_data1").style("display", "none");
+    d3.select("#prop_data0").style("display", "none");
+    d3.select("#prop_data1").style("display", "none");
     d3.select("#svg-DetailData-main").style("display", "block");
     console.log('detail_data')
 }
 
 function handleCorrData() {
+    d3.select("#corr_data0").style("display", "none");
+    d3.select("#corr_data1").style("display", "none");
+    d3.select("#prop_data0").style("display", "none");
+    d3.select("#prop_data1").style("display", "none");
     d3.select("#svg-DetailData-main").style("display", "none");
-    d3.select("#svg-CorrData-main1").style("display", "block");
+    d3.select("#corr_data" + d3.select("#axis_button").attr("curr_corr")).style("display", "block");
     console.log('corr_data');
 }
 
 function handlePropData() {
+    d3.select("#corr_data0").style("display", "none");
+    d3.select("#corr_data1").style("display", "none");
+    d3.select("#prop_data0").style("display", "none");
+    d3.select("#prop_data1").style("display", "none");
+    d3.select("#svg-DetailData-main").style("display", "none");
+    d3.select("#prop_data" + d3.select("#axis_button").attr("curr_prop")).style("display", "block");
     console.log('prop_data');
 }
 
@@ -1100,6 +1113,42 @@ function handleclick(key_i) {
     modal.style.display = 'block';
     d3.select("#DetailData-Modal" + key).style("display", "block");
 }
+
+
+function handleNumberClick() {
+    var button = d3.select("#number_button");
+    var curr = button.attr("curr");
+    if (curr == 'display') {
+        button.attr("curr", "none");
+        button.text("显示数字");
+        d3.selectAll(".numbers")
+            .style("display", "none");
+    }
+    else {
+        button.attr("curr", "display");
+        button.text("隐藏数字");
+        d3.selectAll(".numbers")
+            .style("display", "block");
+    }
+}
+
+function handleAxisChangeClick() {
+    var button = d3.select("#axis_button");
+    var curr = button.attr("curr_" + button.attr("curr_value").substr(0, 4));
+    console.log("#" + button.attr("curr_value") + curr);
+    console.log("#" + button.attr("curr_value") + "1")
+    if (curr == '0') {
+        d3.select("#" + button.attr("curr_value") + curr).style("display", "none");
+        button.attr("curr_" + button.attr("curr_value").substr(0, 4), "1");
+        d3.select("#" + button.attr("curr_value") + "1").style("display", "block");
+    }
+    else {
+        d3.select("#" + button.attr("curr_value") + curr).style("display", "none");
+        button.attr("curr_" + button.attr("curr_value").substr(0, 4), "0");
+        d3.select("#" + button.attr("curr_value") + "0").style("display", "block");
+    }
+}
+
 
 function initializeDetailData() {
     console.log("initializing detail data")
@@ -1197,7 +1246,7 @@ function initializeDetailData() {
         .data(detailed_data_mixed)
         .enter()
         .append("text")
-        .attr("class", "mytext")
+        .attr("class", "numbers")
         .attr("transform", "translate(" + (left + alignment) + "," + upper + ")")
         .attr("x", function (d, i) {
             let tmp = 0;
@@ -1227,22 +1276,27 @@ function initializeDetailData() {
         .attr("y", 20)
         .attr("width", 60)
         .attr("height", 20)
+        .attr("class", "legend_block")
         .style("fill", color[0]);
     svg.append("rect")
         .attr("x", 800 + left)
         .attr("y", 50)
         .attr("width", 60)
         .attr("height", 20)
+        .attr("class", "legend_block")
         .style("fill", color[1]);
     svg.append("text")
         .attr("x", 880 + left)
         .attr("y", 30)
+        .attr("class", "legend_text")
         .text("全部申请")
         .style("font-size", "15px")
         .attr("alignment-baseline", "middle")
     svg.append("text")
         .attr("x", 880 + left)
-        .attr("y", 60).text("已批准申请")
+        .attr("y", 60)
+        .attr("class", "legend_text")
+        .text("已批准申请")
         .style("font-size", "15px")
         .attr("alignment-baseline", "middle")
     svg.append("text")
@@ -1346,7 +1400,7 @@ function initializeDetailData() {
             .data(modal_mixed)
             .enter()
             .append("text")
-            .attr("class", "mytext")
+            .attr("class", "numbers")
             .attr("transform",
                 "translate(" + rect_settings['left-margin'] + "," + local_settings['upper'] + ")")
             .attr("x", function (d, i) {
@@ -1371,6 +1425,11 @@ function initializeDetailData() {
                 "translate(" + (rect_settings['left-margin'] - 5) + "," + (550 - local_settings['bottom']) + " )")
             .call(rect_settings['xAxis'])
             .style("font-size", "10px");
+        modal_svg.append("text")
+            .attr("x", rect_settings['left-margin'] - 20).attr("y", local_settings["upper"] - 3)
+            .text("项数(个)")
+            .style("font-size", "15px")
+            .attr("alignment-baseline", "bottom")
     }
 }
 
@@ -1381,26 +1440,170 @@ function initializeCorrData() {
         height: 800,
     };
     var rect_settings = {
-        leftmargin: 100,
+        leftmargin: 300,
         upper: 100,
         bottom: 100,
-        width: 30,
-        space: 10,
+        width: 75,
+        space: 30,
     };
-    var corr_color = ['red', 'blue', 'grenn', 'black']
+    var rect_settings0 = {
+        leftmargin: 300,
+        upper: 100,
+        bottom: 100,
+        width: 125,
+        space: 50,
+    };
+    var corr_color1 = ['#4ED0F3', '#F7A748', '#F2F60C', '#EF511F']
+    var corr_color0 = ['#4ED0F3', '#F7A748', '#F2F60C', '#EF511F',
+        '#FABA98', '#D7F498', '#98F4A6', '#98E3F4']
     var legend_keys = ['教育部项数', '中国科学院项数', '工交农医国防等项数', '各省项数']
+
+    var svg0 = d3.select("body")     //选择文档中的body元素
+        .append("svg")          //添加一个svg元素
+        .attr("width", svg_settings['width'])       //设定宽度
+        .attr("height", svg_settings['height'])    //设定高度
+        .attr("style", "text-align:center; display: none")
+        .attr("id", "corr_data0");
+    var corr_data_mixed0 = [];
+    var multiply0 = [];
+    var tmp_cnt0 = 0;
+    var sums0 = [];
+    for (key2 in legend_keys) {
+        let tmp_sum = 0;
+        for (key in all_data['corr_data']) {
+            corr_data_mixed0.push(all_data['corr_data'][key][legend_keys[key2]]);
+            multiply0.push(Math.floor(tmp_cnt0 / 8));
+            tmp_cnt0 += 1;
+            tmp_sum += all_data['corr_data'][key][legend_keys[key2]]
+        }
+        sums0.push(tmp_sum);
+    }
+    console.log(sums0);
+    console.log(multiply0);
+    var linear_func0 = d3.scaleLinear()
+        .domain([0, d3.max(sums0)])
+        .range([0, svg_settings['height'] - rect_settings0['upper'] - rect_settings0['bottom']]);
+    var yScale0 = d3.scaleLinear()
+        .domain([0, d3.max(sums0)])
+        .range([svg_settings['height'] - rect_settings0['upper'] - rect_settings0['bottom'], 0]);
+    var yAxis0 = d3.axisLeft(yScale0);
+    var tmp_all_keys0 = [''].concat(legend_keys);
+    var tmp_scale_px0 = [0];
+    for (let i = 0; i < tmp_all_keys0.length - 1; ++i) {
+        tmp_scale_px0.push(10 + i * rect_settings0["width"] +
+            0.5 * (rect_settings0["width"] - rect_settings0['space']));
+    }
+    let tmp_xScale0 = d3.scaleOrdinal().range(tmp_scale_px0).domain(tmp_all_keys0);
+    svg0.selectAll("myrect-corr-data")
+        .data(corr_data_mixed0)
+        .enter()
+        .append("rect")
+        .attr("x", function (d, i) {
+            return rect_settings0["leftmargin"] + multiply0[i] * rect_settings0["width"];
+        })
+        .attr("y", function (d, i) {
+            let tmp = 0;
+            for (let j = 0; j < (i % 8); ++j) {
+                tmp += linear_func0(corr_data_mixed0[8 * Math.floor(i / 8) + j]);
+            }
+            // console.log(tmp)
+            return svg_settings['height'] - linear_func0(sums0[Math.floor(i / 8)])
+                + tmp -
+                rect_settings0['bottom'];
+        })
+        .attr("width", rect_settings0["width"] - rect_settings0["space"])
+        .attr("height", function (d, i) {
+            return linear_func0(d);
+        })
+        .attr("fill", function (d, i) {
+            return corr_color0[i % 8];
+        })
+        .attr("class", "svg-DetailData-main");
+    svg0.append("g")
+        .attr("class", "CorrData_Yaxis")
+        .attr("transform",
+            "translate(" + (rect_settings0['leftmargin'] - 10) + "," + rect_settings0['upper'] + " )")
+        .call(yAxis0);
+    svg0.append("g")
+        .attr("class", "modal_Xaxis")
+        .attr("transform",
+            "translate(" + (rect_settings0['leftmargin'] - 10) + "," +
+            (svg_settings["height"] - rect_settings0['bottom']) + " )")
+        .call(d3.axisBottom(tmp_xScale0))
+        .style("font-size", "10px");
+    svg0.selectAll("myrect-corr-data")
+        .data(corr_data_mixed0)
+        .enter()
+        .append("text")
+        .attr("class", "numbers")
+        .attr("transform",
+            "translate(" + rect_settings0['leftmargin'] + ", 0)")
+        .attr("x", function (d, i) {
+            return multiply0[i] * rect_settings0["width"] + 12.5;
+        })
+        .attr("y", function (d, i) {
+            let tmp = 0;
+            for (let j = 0; j < (i % 8); ++j) {
+                tmp += linear_func0(corr_data_mixed0[8 * Math.floor(i / 8) + j]);
+            }
+            // console.log(tmp)
+            return svg_settings['height'] - linear_func0(sums0[Math.floor(i / 8)])
+                + tmp -
+                rect_settings0['bottom'] - 3;
+        })
+        .attr("alignment-baseline", "bottom")
+        .text(function (d) {
+            if (d == 0) return '';
+            return d;
+        })
+        .attr("fill", "black")
+        .style("font-size", "15px");
+    svg0.append("text")
+        .attr("x", rect_settings0["leftmargin"] - 40)
+        .attr("y", rect_settings0["upper"] - 20)
+        .text("项数(个)")
+        .style("font-size", "15px")
+        .attr("alignment-baseline", "bottom")
+    svg0.selectAll("legend")
+        .data(all_keys)
+        .enter()
+        .append("rect")
+        .attr("class", "lagend_rect")
+        .attr("width", 60)
+        .attr("height", 20)
+        .attr("x", svg_settings["width"] - 300)
+        .attr("y", function (d, i) {
+            return rect_settings0["upper"] + i * 30;
+        })
+        .attr("fill", function (d, i) { return corr_color0[i % 8] });
+    svg0.selectAll("legend")
+        .data(all_keys)
+        .enter()
+        .append("text")
+        .attr("class", "lagend_text")
+        .attr("width", 60)
+        .attr("height", 20)
+        .attr("x", svg_settings["width"] - 220)
+        .attr("y", function (d, i) {
+            return rect_settings0["upper"] + i * 30 + 10;
+        })
+        .text(function (d) { return d })
+        .attr("alignment-baseline", "middle");
+
+
+
     var svg = d3.select("body")     //选择文档中的body元素
         .append("svg")          //添加一个svg元素
         .attr("width", svg_settings['width'])       //设定宽度
         .attr("height", svg_settings['height'])    //设定高度
         .attr("style", "text-align:center; display: none")
-        .attr("id", "svg-CorrData-main1");
+        .attr("id", "corr_data1");
     var corr_data_mixed = [];
     var multiply = [];
     var tmp_cnt = 0;
     var sums = [];
     for (key in all_data['corr_data']) {
-        item = all_data['corr_data'][key];
+        var item = all_data['corr_data'][key];
         for (key2 in legend_keys) {
             corr_data_mixed.push(item[legend_keys[key2]]);
             multiply.push(Math.floor(tmp_cnt / 4));
@@ -1410,9 +1613,21 @@ function initializeCorrData() {
     }
     console.log(corr_data_mixed)
     console.log(multiply)
+    console.log(sums)
     var linear_func = d3.scaleLinear()
         .domain([0, d3.max(sums)])
         .range([0, svg_settings['height'] - rect_settings['upper'] - rect_settings['bottom']]);
+    var yScale = d3.scaleLinear()
+        .domain([0, d3.max(sums)])
+        .range([svg_settings['height'] - rect_settings['upper'] - rect_settings['bottom'], 0]);
+    var yAxis = d3.axisLeft(yScale);
+    var tmp_all_keys = [''].concat(all_keys);
+    var tmp_scale_px = [0];
+    for (let i = 0; i < tmp_all_keys.length - 1; ++i) {
+        tmp_scale_px.push(10 + i * rect_settings["width"] +
+            0.5 * (rect_settings["width"] - rect_settings['space']));
+    }
+    let tmp_xScale = d3.scaleOrdinal().range(tmp_scale_px).domain(tmp_all_keys);
     svg.selectAll("myrect-corr-data")
         .data(corr_data_mixed)
         .enter()
@@ -1422,10 +1637,11 @@ function initializeCorrData() {
         })
         .attr("y", function (d, i) {
             let tmp = 0;
-            for (let j = 0; j < i; ++j) {
+            for (let j = 0; j < (i % 4); ++j) {
                 tmp += linear_func(corr_data_mixed[4 * Math.floor(i / 4) + j]);
             }
-            return svg_settings['height'] - sums[Math.floor(i / 4)]
+            // console.log(tmp)
+            return svg_settings['height'] - linear_func(sums[Math.floor(i / 4)])
                 + tmp -
                 rect_settings['bottom'];
         })
@@ -1434,19 +1650,371 @@ function initializeCorrData() {
             return linear_func(d);
         })
         .attr("fill", function (d, i) {
-            return corr_color[i % 4];
+            return corr_color1[i % 4];
         })
-        .attr("class", "svg-DetailData-main")
-        .attr("onclick", function (d, i) {
-            return "handleclick(" + i + ")";
+        .attr("class", "svg-DetailData-main");
+    svg.append("g")
+        .attr("class", "CorrData_Yaxis")
+        .attr("transform",
+            "translate(" + (rect_settings['leftmargin'] - 10) + "," + rect_settings['upper'] + " )")
+        .call(yAxis);
+    svg.append("g")
+        .attr("class", "modal_Xaxis")
+        .attr("transform",
+            "translate(" + (rect_settings['leftmargin'] - 10) + "," +
+            (svg_settings["height"] - rect_settings['bottom']) + " )")
+        .call(d3.axisBottom(tmp_xScale))
+        .style("font-size", "10px");
+    svg.selectAll("myrect-corr-data")
+        .data(corr_data_mixed)
+        .enter()
+        .append("text")
+        .attr("class", "numbers")
+        .attr("transform",
+            "translate(" + rect_settings['leftmargin'] + ", 0)")
+        .attr("x", function (d, i) {
+            return multiply[i] * rect_settings["width"] + 12.5;
         })
-        .style("cursor", "pointer")
-        .append("title")
-        .text("点击查看详情");
+        .attr("y", function (d, i) {
+            let tmp = 0;
+            for (let j = 0; j < (i % 4); ++j) {
+                tmp += linear_func(corr_data_mixed[4 * Math.floor(i / 4) + j]);
+            }
+            // console.log(tmp)
+            return svg_settings['height'] - linear_func(sums[Math.floor(i / 4)])
+                + tmp -
+                rect_settings['bottom'] - 3;
+        })
+        .attr("alignment-baseline", "bottom")
+        .text(function (d) {
+            if (d == 0) return '';
+            return d;
+        })
+        .attr("fill", "black")
+        .style("font-size", "15px");
+    svg.append("text")
+        .attr("x", rect_settings["leftmargin"] - 40)
+        .attr("y", rect_settings["upper"] - 20)
+        .text("项数(个)")
+        .style("font-size", "15px")
+        .attr("alignment-baseline", "bottom")
+    svg.selectAll("legend")
+        .data(legend_keys)
+        .enter()
+        .append("rect")
+        .attr("class", "lagend_rect")
+        .attr("width", 60)
+        .attr("height", 20)
+        .attr("x", svg_settings["width"] - 300)
+        .attr("y", function (d, i) {
+            return rect_settings["upper"] + i * 30;
+        })
+        .attr("fill", function (d, i) { return corr_color1[i % 4] });
+    svg.selectAll("legend")
+        .data(legend_keys)
+        .enter()
+        .append("text")
+        .attr("class", "lagend_text")
+        .attr("width", 60)
+        .attr("height", 20)
+        .attr("x", svg_settings["width"] - 220)
+        .attr("y", function (d, i) {
+            return rect_settings["upper"] + i * 30 + 10;
+        })
+        .text(function (d) { return d })
+        .attr("alignment-baseline", "middle");
 }
 
 function initializePropData() {
     console.log("initializing prop data");
+    var svg_settings = {
+        width: 1200,
+        height: 800,
+    };
+    var rect_settings = {
+        leftmargin: 300,
+        upper: 100,
+        bottom: 100,
+        width: 75,
+        space: 30,
+    };
+    var rect_settings0 = {
+        leftmargin: 300,
+        upper: 100,
+        bottom: 100,
+        width: 125,
+        space: 50,
+    };
+    var corr_color1 = ['#4ED0F3', '#F7A748', '#F2F60C', '#EF511F']
+    var corr_color0 = ['#4ED0F3', '#F7A748', '#F2F60C', '#EF511F',
+        '#FABA98', '#D7F498', '#98F4A6', '#98E3F4']
+    var legend_keys = ['高等院校项数', '科研单位项数', '其他项数']
+
+    var svg0 = d3.select("body")     //选择文档中的body元素
+        .append("svg")          //添加一个svg元素
+        .attr("width", svg_settings['width'])       //设定宽度
+        .attr("height", svg_settings['height'])    //设定高度
+        .attr("style", "text-align:center; display: none")
+        .attr("id", "prop_data0");
+    var prop_data_mixed0 = [];
+    var multiply0 = [];
+    var tmp_cnt0 = 0;
+    var sums0 = [];
+    for (key2 in legend_keys) {
+        let tmp_sum = 0;
+        for (key in all_data['prop_data']) {
+            prop_data_mixed0.push(all_data['prop_data'][key][legend_keys[key2]]);
+            multiply0.push(Math.floor(tmp_cnt0 / 8));
+            tmp_cnt0 += 1;
+            tmp_sum += all_data['prop_data'][key][legend_keys[key2]]
+        }
+        sums0.push(tmp_sum);
+    }
+    console.log(sums0);
+    console.log(multiply0);
+    var linear_func0 = d3.scaleLinear()
+        .domain([0, d3.max(sums0)])
+        .range([0, svg_settings['height'] - rect_settings0['upper'] - rect_settings0['bottom']]);
+    var yScale0 = d3.scaleLinear()
+        .domain([0, d3.max(sums0)])
+        .range([svg_settings['height'] - rect_settings0['upper'] - rect_settings0['bottom'], 0]);
+    var yAxis0 = d3.axisLeft(yScale0);
+    var tmp_all_keys0 = [''].concat(legend_keys);
+    var tmp_scale_px0 = [0];
+    for (let i = 0; i < tmp_all_keys0.length - 1; ++i) {
+        tmp_scale_px0.push(10 + i * rect_settings0["width"] +
+            0.5 * (rect_settings0["width"] - rect_settings0['space']));
+    }
+    let tmp_xScale0 = d3.scaleOrdinal().range(tmp_scale_px0).domain(tmp_all_keys0);
+    svg0.selectAll("myrect-corr-data")
+        .data(prop_data_mixed0)
+        .enter()
+        .append("rect")
+        .attr("x", function (d, i) {
+            return rect_settings0["leftmargin"] + multiply0[i] * rect_settings0["width"];
+        })
+        .attr("y", function (d, i) {
+            let tmp = 0;
+            for (let j = 0; j < (i % 8); ++j) {
+                tmp += linear_func0(prop_data_mixed0[8 * Math.floor(i / 8) + j]);
+            }
+            // console.log(tmp)
+            return svg_settings['height'] - linear_func0(sums0[Math.floor(i / 8)])
+                + tmp -
+                rect_settings0['bottom'];
+        })
+        .attr("width", rect_settings0["width"] - rect_settings0["space"])
+        .attr("height", function (d, i) {
+            return linear_func0(d);
+        })
+        .attr("fill", function (d, i) {
+            return corr_color0[i % 8];
+        })
+        .attr("class", "svg-DetailData-main");
+    svg0.append("g")
+        .attr("class", "CorrData_Yaxis")
+        .attr("transform",
+            "translate(" + (rect_settings0['leftmargin'] - 10) + "," + rect_settings0['upper'] + " )")
+        .call(yAxis0);
+    svg0.append("g")
+        .attr("class", "modal_Xaxis")
+        .attr("transform",
+            "translate(" + (rect_settings0['leftmargin'] - 10) + "," +
+            (svg_settings["height"] - rect_settings0['bottom']) + " )")
+        .call(d3.axisBottom(tmp_xScale0))
+        .style("font-size", "10px");
+    svg0.selectAll("myrect-corr-data")
+        .data(prop_data_mixed0)
+        .enter()
+        .append("text")
+        .attr("class", "numbers")
+        .attr("transform",
+            "translate(" + rect_settings0['leftmargin'] + ", 0)")
+        .attr("x", function (d, i) {
+            return multiply0[i] * rect_settings0["width"] + 12.5;
+        })
+        .attr("y", function (d, i) {
+            let tmp = 0;
+            for (let j = 0; j < (i % 8); ++j) {
+                tmp += linear_func0(prop_data_mixed0[8 * Math.floor(i / 8) + j]);
+            }
+            // console.log(tmp)
+            return svg_settings['height'] - linear_func0(sums0[Math.floor(i / 8)])
+                + tmp -
+                rect_settings0['bottom'] - 3;
+        })
+        .attr("alignment-baseline", "bottom")
+        .text(function (d) {
+            if (d == 0) return '';
+            return d;
+        })
+        .attr("fill", "black")
+        .style("font-size", "15px");
+    svg0.append("text")
+        .attr("x", rect_settings0["leftmargin"] - 40)
+        .attr("y", rect_settings0["upper"] - 20)
+        .text("项数(个)")
+        .style("font-size", "15px")
+        .attr("alignment-baseline", "bottom")
+    svg0.selectAll("legend")
+        .data(all_keys)
+        .enter()
+        .append("rect")
+        .attr("class", "lagend_rect")
+        .attr("width", 60)
+        .attr("height", 20)
+        .attr("x", svg_settings["width"] - 300)
+        .attr("y", function (d, i) {
+            return rect_settings0["upper"] + i * 30;
+        })
+        .attr("fill", function (d, i) { return corr_color0[i % 8] });
+    svg0.selectAll("legend")
+        .data(all_keys)
+        .enter()
+        .append("text")
+        .attr("class", "lagend_text")
+        .attr("width", 60)
+        .attr("height", 20)
+        .attr("x", svg_settings["width"] - 220)
+        .attr("y", function (d, i) {
+            return rect_settings0["upper"] + i * 30 + 10;
+        })
+        .text(function (d) { return d })
+        .attr("alignment-baseline", "middle");
+
+
+
+    var svg = d3.select("body")     //选择文档中的body元素
+        .append("svg")          //添加一个svg元素
+        .attr("width", svg_settings['width'])       //设定宽度
+        .attr("height", svg_settings['height'])    //设定高度
+        .attr("style", "text-align:center; display: none")
+        .attr("id", "prop_data1");
+    var prop_data_mixed = [];
+    var multiply = [];
+    var tmp_cnt = 0;
+    var sums = [];
+    for (key in all_data['prop_data']) {
+        var item = all_data['prop_data'][key];
+        for (key2 in legend_keys) {
+            prop_data_mixed.push(item[legend_keys[key2]]);
+            multiply.push(Math.floor(tmp_cnt / 3));
+            tmp_cnt += 1;
+        }
+        sums.push(item["合计项数"])
+    }
+    console.log(prop_data_mixed)
+    console.log(multiply)
+    console.log(sums)
+    var linear_func = d3.scaleLinear()
+        .domain([0, d3.max(sums)])
+        .range([0, svg_settings['height'] - rect_settings['upper'] - rect_settings['bottom']]);
+    var yScale = d3.scaleLinear()
+        .domain([0, d3.max(sums)])
+        .range([svg_settings['height'] - rect_settings['upper'] - rect_settings['bottom'], 0]);
+    var yAxis = d3.axisLeft(yScale);
+    var tmp_all_keys = [''].concat(all_keys);
+    var tmp_scale_px = [0];
+    for (let i = 0; i < tmp_all_keys.length - 1; ++i) {
+        tmp_scale_px.push(10 + i * rect_settings["width"] +
+            0.5 * (rect_settings["width"] - rect_settings['space']));
+    }
+    let tmp_xScale = d3.scaleOrdinal().range(tmp_scale_px).domain(tmp_all_keys);
+    svg.selectAll("myrect-corr-data")
+        .data(prop_data_mixed)
+        .enter()
+        .append("rect")
+        .attr("x", function (d, i) {
+            return rect_settings["leftmargin"] + multiply[i] * rect_settings["width"];
+        })
+        .attr("y", function (d, i) {
+            let tmp = 0;
+            for (let j = 0; j < (i % 3); ++j) {
+                tmp += linear_func(prop_data_mixed[3 * Math.floor(i / 3) + j]);
+            }
+            // console.log(tmp)
+            return svg_settings['height'] - linear_func(sums[Math.floor(i / 3)])
+                + tmp -
+                rect_settings['bottom'];
+        })
+        .attr("width", rect_settings["width"] - rect_settings["space"])
+        .attr("height", function (d, i) {
+            return linear_func(d);
+        })
+        .attr("fill", function (d, i) {
+            return corr_color1[i % 3];
+        })
+        .attr("class", "svg-DetailData-main");
+    svg.append("g")
+        .attr("class", "CorrData_Yaxis")
+        .attr("transform",
+            "translate(" + (rect_settings['leftmargin'] - 10) + "," + rect_settings['upper'] + " )")
+        .call(yAxis);
+    svg.append("g")
+        .attr("class", "modal_Xaxis")
+        .attr("transform",
+            "translate(" + (rect_settings['leftmargin'] - 10) + "," +
+            (svg_settings["height"] - rect_settings['bottom']) + " )")
+        .call(d3.axisBottom(tmp_xScale))
+        .style("font-size", "10px");
+    svg.selectAll("myrect-corr-data")
+        .data(prop_data_mixed)
+        .enter()
+        .append("text")
+        .attr("class", "numbers")
+        .attr("transform",
+            "translate(" + rect_settings['leftmargin'] + ", 0)")
+        .attr("x", function (d, i) {
+            return multiply[i] * rect_settings["width"] + 12.5;
+        })
+        .attr("y", function (d, i) {
+            let tmp = 0;
+            for (let j = 0; j < (i % 3); ++j) {
+                tmp += linear_func(prop_data_mixed[3 * Math.floor(i / 3) + j]);
+            }
+            // console.log(tmp)
+            return svg_settings['height'] - linear_func(sums[Math.floor(i / 3)])
+                + tmp -
+                rect_settings['bottom'] - 3;
+        })
+        .attr("alignment-baseline", "bottom")
+        .text(function (d) {
+            if (d == 0) return '';
+            return d;
+        })
+        .attr("fill", "black")
+        .style("font-size", "15px");
+    svg.append("text")
+        .attr("x", rect_settings["leftmargin"] - 40)
+        .attr("y", rect_settings["upper"] - 20)
+        .text("项数(个)")
+        .style("font-size", "15px")
+        .attr("alignment-baseline", "bottom")
+    svg.selectAll("legend")
+        .data(legend_keys)
+        .enter()
+        .append("rect")
+        .attr("class", "lagend_rect")
+        .attr("width", 60)
+        .attr("height", 20)
+        .attr("x", svg_settings["width"] - 300)
+        .attr("y", function (d, i) {
+            return rect_settings["upper"] + i * 30;
+        })
+        .attr("fill", function (d, i) { return corr_color1[i % 3] });
+    svg.selectAll("legend")
+        .data(legend_keys)
+        .enter()
+        .append("text")
+        .attr("class", "lagend_text")
+        .attr("width", 60)
+        .attr("height", 20)
+        .attr("x", svg_settings["width"] - 220)
+        .attr("y", function (d, i) {
+            return rect_settings["upper"] + i * 30 + 10;
+        })
+        .text(function (d) { return d })
+        .attr("alignment-baseline", "middle");
 }
 
 function initializeLocData() {
