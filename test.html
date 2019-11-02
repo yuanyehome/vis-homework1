@@ -83,7 +83,7 @@
             }
             else if (value == '按地区统计') {
                 d3.select("#axis_button")
-                    .attr("disabled", null)
+                    .attr("disabled", "disabled")
                     .style("cursor", "no-drop")
                     .attr("curr_value", "loc_data");
                 handleLocData();

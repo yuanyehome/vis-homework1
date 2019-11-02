@@ -2162,7 +2162,9 @@ function initializeLocData() {
         .style("cursor", "pointer")
         .attr("onclick", function (d, i) {
             return ("handleLocClick(" + i + ")");
-        });
+        })
+        .append("title")
+        .text("点击获得详细信息");
     svg0.selectAll("legend")
         .data(all_keys)
         .enter()
@@ -2179,7 +2181,9 @@ function initializeLocData() {
         .style("cursor", "pointer")
         .attr("onclick", function (d, i) {
             return ("handleLocClick(" + i + ")");
-        });
+        })
+        .append("title")
+        .text("点击获得详细信息");
     for (key_i in all_keys) {
         let key = all_keys[key_i];
         var local_settings = {
@@ -2205,7 +2209,7 @@ function initializeLocData() {
         for (key2 in item) {
             modal_mixed.push(item[key2][key + "项数"])
         }
-        console.log(modal_mixed)
+        // console.log(modal_mixed)
         rect_settings['max'] = d3.max(loc_data_mixed0);
         rect_settings['left-margin'] = (550 - rect_settings['width'] * modal_mixed.length) / 2
         rect_settings['scale_func'] = d3.scaleLinear()

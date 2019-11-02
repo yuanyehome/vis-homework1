@@ -1,3 +1,5 @@
 *.xls
 .DS_Store
 **/.DS_Store
+submit*
+*.zip
