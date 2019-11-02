@@ -82,6 +82,10 @@
                 handlePropData();
             }
             else if (value == '按地区统计') {
+                d3.select("#axis_button")
+                    .attr("disabled", null)
+                    .style("cursor", "no-drop")
+                    .attr("curr_value", "loc_data");
                 handleLocData();
             }
             else {
@@ -111,7 +115,7 @@
     </div>
     <div style="float: left;">
         <button style="font-size: 20px; height: 32px;cursor: no-drop;" onclick="handleAxisChangeClick()"
-            id="axis_button" curr_corr="0" curr_prop="0" disabled="disabled">
+            id="axis_button" curr_corr="1" curr_prop="1" disabled="disabled">
             切换坐标轴
         </button>
     </div>
@@ -129,11 +133,13 @@
         span.onclick = function () {
             modal.style.display = "none";
             d3.select("#DetailData-Modal" + curr_key).style("display", "none");
+            d3.selectAll(".LocData-Modal").style("display", "none");
         }
         window.onclick = function (event) {
             if (event.target == modal) {
                 modal.style.display = "none";
                 d3.select("#DetailData-Modal" + curr_key).style("display", "none");
+                d3.selectAll(".LocData-Modal").style("display", "none");
             }
         }
     </script>

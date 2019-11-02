@@ -204,7 +204,7 @@ const all_data = {
                 "批准金额": 1170
             }
         },
-        "工程与材料科学部": {
+        "工程与材料学部": {
             "金属材料学科": {
                 "name": "金属材料学科",
                 "受理项数": 94,
@@ -434,8 +434,8 @@ const all_data = {
             "各省项数": 3,
             "各省金额": 390
         },
-        "工程与材料科学部": {
-            "name": "工程与材料科学部",
+        "工程与材料学部": {
+            "name": "工程与材料学部",
             "合计项数": 74,
             "合计金额": 9620,
             "教育部项数": 47,
@@ -532,8 +532,8 @@ const all_data = {
             "其他项数": 0,
             "其他金额": 0
         },
-        "工程与材料科学部": {
-            "name": "工程与材料科学部",
+        "工程与材料学部": {
+            "name": "工程与材料学部",
             "合计项数": 74,
             "合计金额": 9620,
             "高等院校项数": 61,
@@ -1065,7 +1065,7 @@ const all_data = {
 }
 
 var all_keys = ['数理科学部', '化学科学部', '生命科学部', '地球科学部',
-    '工程与材料科学部', '信息科学部', '管理科学部', '医学科学部'];
+    '工程与材料学部', '信息科学部', '管理科学部', '医学科学部'];
 var all_modals = [];
 var curr_key;
 var corrdata = 0;
@@ -1077,7 +1077,7 @@ function handleDetailData() {
     d3.select("#prop_data0").style("display", "none");
     d3.select("#prop_data1").style("display", "none");
     d3.select("#svg-DetailData-main").style("display", "block");
-    console.log('detail_data')
+    // console.log('detail_data')
 }
 
 function handleCorrData() {
@@ -1086,8 +1086,9 @@ function handleCorrData() {
     d3.select("#prop_data0").style("display", "none");
     d3.select("#prop_data1").style("display", "none");
     d3.select("#svg-DetailData-main").style("display", "none");
+    d3.select("#loc_data").style("display", "none");
     d3.select("#corr_data" + d3.select("#axis_button").attr("curr_corr")).style("display", "block");
-    console.log('corr_data');
+    // console.log('corr_data');
 }
 
 function handlePropData() {
@@ -1096,17 +1097,24 @@ function handlePropData() {
     d3.select("#prop_data0").style("display", "none");
     d3.select("#prop_data1").style("display", "none");
     d3.select("#svg-DetailData-main").style("display", "none");
+    d3.select("#loc_data").style("display", "none");
     d3.select("#prop_data" + d3.select("#axis_button").attr("curr_prop")).style("display", "block");
-    console.log('prop_data');
+    // console.log('prop_data');
 }
 
 function handleLocData() {
-    console.log('loc_data');
+    // console.log('loc_data');
+    d3.select("#corr_data0").style("display", "none");
+    d3.select("#corr_data1").style("display", "none");
+    d3.select("#prop_data0").style("display", "none");
+    d3.select("#prop_data1").style("display", "none");
+    d3.select("#svg-DetailData-main").style("display", "none");
+    d3.select("#loc_data").style("display", "block");
 }
 
 function handleclick(key_i) {
     // 获取弹窗
-    // console.log(key_i);
+    // // console.log(key_i);
     var key = all_keys[Math.floor(key_i / 2)];
     curr_key = key
     var modal = document.getElementById('DetailData-Modal');
@@ -1135,8 +1143,8 @@ function handleNumberClick() {
 function handleAxisChangeClick() {
     var button = d3.select("#axis_button");
     var curr = button.attr("curr_" + button.attr("curr_value").substr(0, 4));
-    console.log("#" + button.attr("curr_value") + curr);
-    console.log("#" + button.attr("curr_value") + "1")
+    // console.log("#" + button.attr("curr_value") + curr);
+    // console.log("#" + button.attr("curr_value") + "1")
     if (curr == '0') {
         d3.select("#" + button.attr("curr_value") + curr).style("display", "none");
         button.attr("curr_" + button.attr("curr_value").substr(0, 4), "1");
@@ -1151,7 +1159,7 @@ function handleAxisChangeClick() {
 
 
 function initializeDetailData() {
-    console.log("initializing detail data")
+    // console.log("initializing detail data")
     var upper = 120;
     var bottom = 100;
     var left = 200;
@@ -1174,14 +1182,14 @@ function initializeDetailData() {
         detailed_data_all.push(sum_all);
         detailed_data_pass.push(sum_pass);
     }
-    // console.log(detailed_data_all);
-    // console.log(detailed_data_pass);
+    // // console.log(detailed_data_all);
+    // // console.log(detailed_data_pass);
     var detailed_data_mixed = [];
     for (let i = 0; i < detailed_data_all.length; ++i) {
         detailed_data_mixed.push(detailed_data_all[i]);
         detailed_data_mixed.push(detailed_data_pass[i]);
     }
-    // console.log(detailed_data_mixed);
+    // // console.log(detailed_data_mixed);
     var min = d3.min(detailed_data_mixed);
     var max = d3.max(detailed_data_mixed);
     var yScale = d3.scaleLinear()
@@ -1207,7 +1215,7 @@ function initializeDetailData() {
         , 13 * rectHeight - 10 + blank_tmp
         , 15 * rectHeight - 10 + blank_tmp]);
     let xScale = x.domain(['', '数理科学部', '化学科学部', '生命科学部', '地球科学部',
-        '工程与材料科学部', '信息科学部', '管理科学部', '医学科学部'])
+        '工程与材料学部', '信息科学部', '管理科学部', '医学科学部'])
 
     var xAxis = d3.axisBottom(xScale);
 
@@ -1216,7 +1224,8 @@ function initializeDetailData() {
         .attr("width", width)       //设定宽度
         .attr("height", height)    //设定高度
         .attr("style", "text-align:center; display: none")
-        .attr("id", "svg-DetailData-main");
+        .attr("id", "svg-DetailData-main")
+        .style("clear", "both");
 
     svg.selectAll("myrect")
         .data(detailed_data_mixed)
@@ -1321,7 +1330,7 @@ function initializeDetailData() {
             space: 4,
         }
         var item = all_data['detailed_data'][key];
-        // console.log(d3.selectAll("#DetailData-Modal"))
+        // // console.log(d3.selectAll("#DetailData-Modal"))
         var modal_svg = d3.select("#DetailData-Modal").select("div")
             .append("svg")          //添加一个svg元素
             .attr("width", 550)       //设定宽度
@@ -1343,9 +1352,9 @@ function initializeDetailData() {
             modal_pass.push(item[key2]['批准项数']);
             modal_mixed.push(item[key2]['批准项数']);
         }
-        // console.log(modal_all);
-        // console.log(modal_pass);
-        // console.log(modal_mixed);
+        // // console.log(modal_all);
+        // // console.log(modal_pass);
+        // // console.log(modal_mixed);
         rect_settings['min'] = d3.min(modal_mixed);
         rect_settings['max'] = d3.max(modal_mixed);
         rect_settings['left-margin'] = (550 - rect_settings['width'] * modal_mixed.length) / 2
@@ -1361,8 +1370,8 @@ function initializeDetailData() {
             rect_settings['px_scale']
                 .push(5 + (2 * i + 1) * rect_settings['width'] - rect_settings['space']);
         }
-        // console.log(rect_settings['px_scale'])
-        // console.log(key2s)
+        // // console.log(rect_settings['px_scale'])
+        // // console.log(key2s)
         let tmp_xScale = d3.scaleOrdinal().range(rect_settings['px_scale']).domain(key2s);
         rect_settings['xAxis'] = d3.axisBottom(tmp_xScale);
         modal_svg.append("text")
@@ -1434,7 +1443,7 @@ function initializeDetailData() {
 }
 
 function initializeCorrData() {
-    console.log("initializing corr data");
+    // console.log("initializing corr data");
     var svg_settings = {
         width: 1200,
         height: 800,
@@ -1453,9 +1462,9 @@ function initializeCorrData() {
         width: 125,
         space: 50,
     };
-    var corr_color1 = ['#4ED0F3', '#F7A748', '#F2F60C', '#EF511F']
-    var corr_color0 = ['#4ED0F3', '#F7A748', '#F2F60C', '#EF511F',
-        '#FABA98', '#D7F498', '#98F4A6', '#98E3F4']
+    var corr_color1 = ['#F9B7B0', '#F9DEB0', '#E8F9B0', '#B0F9D3']
+    var corr_color0 = ['#F9B7B0', '#F9DEB0', '#E8F9B0', '#B0F9D3',
+        '#B0E5F9', '#B0C5F9', '#CBB0F9', '#F9B0ED']
     var legend_keys = ['教育部项数', '中国科学院项数', '工交农医国防等项数', '各省项数']
 
     var svg0 = d3.select("body")     //选择文档中的body元素
@@ -1463,7 +1472,8 @@ function initializeCorrData() {
         .attr("width", svg_settings['width'])       //设定宽度
         .attr("height", svg_settings['height'])    //设定高度
         .attr("style", "text-align:center; display: none")
-        .attr("id", "corr_data0");
+        .attr("id", "corr_data0")
+        .style("clear", "both");
     var corr_data_mixed0 = [];
     var multiply0 = [];
     var tmp_cnt0 = 0;
@@ -1478,8 +1488,8 @@ function initializeCorrData() {
         }
         sums0.push(tmp_sum);
     }
-    console.log(sums0);
-    console.log(multiply0);
+    // console.log(sums0);
+    // console.log(multiply0);
     var linear_func0 = d3.scaleLinear()
         .domain([0, d3.max(sums0)])
         .range([0, svg_settings['height'] - rect_settings0['upper'] - rect_settings0['bottom']]);
@@ -1506,7 +1516,7 @@ function initializeCorrData() {
             for (let j = 0; j < (i % 8); ++j) {
                 tmp += linear_func0(corr_data_mixed0[8 * Math.floor(i / 8) + j]);
             }
-            // console.log(tmp)
+            // // console.log(tmp)
             return svg_settings['height'] - linear_func0(sums0[Math.floor(i / 8)])
                 + tmp -
                 rect_settings0['bottom'];
@@ -1518,7 +1528,10 @@ function initializeCorrData() {
         .attr("fill", function (d, i) {
             return corr_color0[i % 8];
         })
-        .attr("class", "svg-DetailData-main");
+        .append("title")
+        .text(function (d, i) {
+            return legend_keys[Math.floor(i / 8)];
+        });
     svg0.append("g")
         .attr("class", "CorrData_Yaxis")
         .attr("transform",
@@ -1546,7 +1559,7 @@ function initializeCorrData() {
             for (let j = 0; j < (i % 8); ++j) {
                 tmp += linear_func0(corr_data_mixed0[8 * Math.floor(i / 8) + j]);
             }
-            // console.log(tmp)
+            // // console.log(tmp)
             return svg_settings['height'] - linear_func0(sums0[Math.floor(i / 8)])
                 + tmp -
                 rect_settings0['bottom'] - 3;
@@ -1597,7 +1610,8 @@ function initializeCorrData() {
         .attr("width", svg_settings['width'])       //设定宽度
         .attr("height", svg_settings['height'])    //设定高度
         .attr("style", "text-align:center; display: none")
-        .attr("id", "corr_data1");
+        .attr("id", "corr_data1")
+        .style("clear", "both");
     var corr_data_mixed = [];
     var multiply = [];
     var tmp_cnt = 0;
@@ -1611,9 +1625,9 @@ function initializeCorrData() {
         }
         sums.push(item["合计项数"])
     }
-    console.log(corr_data_mixed)
-    console.log(multiply)
-    console.log(sums)
+    // console.log(corr_data_mixed)
+    // console.log(multiply)
+    // console.log(sums)
     var linear_func = d3.scaleLinear()
         .domain([0, d3.max(sums)])
         .range([0, svg_settings['height'] - rect_settings['upper'] - rect_settings['bottom']]);
@@ -1640,7 +1654,7 @@ function initializeCorrData() {
             for (let j = 0; j < (i % 4); ++j) {
                 tmp += linear_func(corr_data_mixed[4 * Math.floor(i / 4) + j]);
             }
-            // console.log(tmp)
+            // // console.log(tmp)
             return svg_settings['height'] - linear_func(sums[Math.floor(i / 4)])
                 + tmp -
                 rect_settings['bottom'];
@@ -1652,7 +1666,10 @@ function initializeCorrData() {
         .attr("fill", function (d, i) {
             return corr_color1[i % 4];
         })
-        .attr("class", "svg-DetailData-main");
+        .append("title")
+        .text(function (d, i) {
+            return all_keys[Math.floor(i / 4)]
+        });
     svg.append("g")
         .attr("class", "CorrData_Yaxis")
         .attr("transform",
@@ -1680,7 +1697,7 @@ function initializeCorrData() {
             for (let j = 0; j < (i % 4); ++j) {
                 tmp += linear_func(corr_data_mixed[4 * Math.floor(i / 4) + j]);
             }
-            // console.log(tmp)
+            // // console.log(tmp)
             return svg_settings['height'] - linear_func(sums[Math.floor(i / 4)])
                 + tmp -
                 rect_settings['bottom'] - 3;
@@ -1726,7 +1743,7 @@ function initializeCorrData() {
 }
 
 function initializePropData() {
-    console.log("initializing prop data");
+    // console.log("initializing prop data");
     var svg_settings = {
         width: 1200,
         height: 800,
@@ -1745,9 +1762,9 @@ function initializePropData() {
         width: 125,
         space: 50,
     };
-    var corr_color1 = ['#4ED0F3', '#F7A748', '#F2F60C', '#EF511F']
-    var corr_color0 = ['#4ED0F3', '#F7A748', '#F2F60C', '#EF511F',
-        '#FABA98', '#D7F498', '#98F4A6', '#98E3F4']
+    var prop_color1 = ['#F9B7B0', '#F9DEB0', '#E8F9B0', '#B0F9D3']
+    var prop_color0 = ['#F9B7B0', '#F9DEB0', '#E8F9B0', '#B0F9D3',
+        '#B0E5F9', '#B0C5F9', '#CBB0F9', '#F9B0ED']
     var legend_keys = ['高等院校项数', '科研单位项数', '其他项数']
 
     var svg0 = d3.select("body")     //选择文档中的body元素
@@ -1755,7 +1772,8 @@ function initializePropData() {
         .attr("width", svg_settings['width'])       //设定宽度
         .attr("height", svg_settings['height'])    //设定高度
         .attr("style", "text-align:center; display: none")
-        .attr("id", "prop_data0");
+        .attr("id", "prop_data0")
+        .style("clear", "both");
     var prop_data_mixed0 = [];
     var multiply0 = [];
     var tmp_cnt0 = 0;
@@ -1770,8 +1788,8 @@ function initializePropData() {
         }
         sums0.push(tmp_sum);
     }
-    console.log(sums0);
-    console.log(multiply0);
+    // console.log(sums0);
+    // console.log(multiply0);
     var linear_func0 = d3.scaleLinear()
         .domain([0, d3.max(sums0)])
         .range([0, svg_settings['height'] - rect_settings0['upper'] - rect_settings0['bottom']]);
@@ -1786,7 +1804,7 @@ function initializePropData() {
             0.5 * (rect_settings0["width"] - rect_settings0['space']));
     }
     let tmp_xScale0 = d3.scaleOrdinal().range(tmp_scale_px0).domain(tmp_all_keys0);
-    svg0.selectAll("myrect-corr-data")
+    svg0.selectAll("myrect-prop-data")
         .data(prop_data_mixed0)
         .enter()
         .append("rect")
@@ -1798,7 +1816,7 @@ function initializePropData() {
             for (let j = 0; j < (i % 8); ++j) {
                 tmp += linear_func0(prop_data_mixed0[8 * Math.floor(i / 8) + j]);
             }
-            // console.log(tmp)
+            // // console.log(tmp)
             return svg_settings['height'] - linear_func0(sums0[Math.floor(i / 8)])
                 + tmp -
                 rect_settings0['bottom'];
@@ -1808,11 +1826,15 @@ function initializePropData() {
             return linear_func0(d);
         })
         .attr("fill", function (d, i) {
-            return corr_color0[i % 8];
+            return prop_color0[i % 8];
         })
-        .attr("class", "svg-DetailData-main");
+        .attr("class", "svg-DetailData-main")
+        .append("title")
+        .text(function (d, i) {
+            return legend_keys[Math.floor(i / 8)]
+        });
     svg0.append("g")
-        .attr("class", "CorrData_Yaxis")
+        .attr("class", "propData_Yaxis")
         .attr("transform",
             "translate(" + (rect_settings0['leftmargin'] - 10) + "," + rect_settings0['upper'] + " )")
         .call(yAxis0);
@@ -1823,7 +1845,7 @@ function initializePropData() {
             (svg_settings["height"] - rect_settings0['bottom']) + " )")
         .call(d3.axisBottom(tmp_xScale0))
         .style("font-size", "10px");
-    svg0.selectAll("myrect-corr-data")
+    svg0.selectAll("myrect-prop-data")
         .data(prop_data_mixed0)
         .enter()
         .append("text")
@@ -1838,7 +1860,7 @@ function initializePropData() {
             for (let j = 0; j < (i % 8); ++j) {
                 tmp += linear_func0(prop_data_mixed0[8 * Math.floor(i / 8) + j]);
             }
-            // console.log(tmp)
+            // // console.log(tmp)
             return svg_settings['height'] - linear_func0(sums0[Math.floor(i / 8)])
                 + tmp -
                 rect_settings0['bottom'] - 3;
@@ -1867,7 +1889,7 @@ function initializePropData() {
         .attr("y", function (d, i) {
             return rect_settings0["upper"] + i * 30;
         })
-        .attr("fill", function (d, i) { return corr_color0[i % 8] });
+        .attr("fill", function (d, i) { return prop_color0[i % 8] });
     svg0.selectAll("legend")
         .data(all_keys)
         .enter()
@@ -1889,7 +1911,8 @@ function initializePropData() {
         .attr("width", svg_settings['width'])       //设定宽度
         .attr("height", svg_settings['height'])    //设定高度
         .attr("style", "text-align:center; display: none")
-        .attr("id", "prop_data1");
+        .attr("id", "prop_data1")
+        .style("clear", "both");
     var prop_data_mixed = [];
     var multiply = [];
     var tmp_cnt = 0;
@@ -1903,9 +1926,9 @@ function initializePropData() {
         }
         sums.push(item["合计项数"])
     }
-    console.log(prop_data_mixed)
-    console.log(multiply)
-    console.log(sums)
+    // console.log(prop_data_mixed)
+    // console.log(multiply)
+    // console.log(sums)
     var linear_func = d3.scaleLinear()
         .domain([0, d3.max(sums)])
         .range([0, svg_settings['height'] - rect_settings['upper'] - rect_settings['bottom']]);
@@ -1920,7 +1943,7 @@ function initializePropData() {
             0.5 * (rect_settings["width"] - rect_settings['space']));
     }
     let tmp_xScale = d3.scaleOrdinal().range(tmp_scale_px).domain(tmp_all_keys);
-    svg.selectAll("myrect-corr-data")
+    svg.selectAll("myrect-prop-data")
         .data(prop_data_mixed)
         .enter()
         .append("rect")
@@ -1932,7 +1955,7 @@ function initializePropData() {
             for (let j = 0; j < (i % 3); ++j) {
                 tmp += linear_func(prop_data_mixed[3 * Math.floor(i / 3) + j]);
             }
-            // console.log(tmp)
+            // // console.log(tmp)
             return svg_settings['height'] - linear_func(sums[Math.floor(i / 3)])
                 + tmp -
                 rect_settings['bottom'];
@@ -1942,11 +1965,14 @@ function initializePropData() {
             return linear_func(d);
         })
         .attr("fill", function (d, i) {
-            return corr_color1[i % 3];
+            return prop_color1[i % 3];
         })
-        .attr("class", "svg-DetailData-main");
+        .append("title")
+        .text(function (d, i) {
+            return all_keys[Math.floor(i / 3)]
+        });
     svg.append("g")
-        .attr("class", "CorrData_Yaxis")
+        .attr("class", "propData_Yaxis")
         .attr("transform",
             "translate(" + (rect_settings['leftmargin'] - 10) + "," + rect_settings['upper'] + " )")
         .call(yAxis);
@@ -1957,7 +1983,7 @@ function initializePropData() {
             (svg_settings["height"] - rect_settings['bottom']) + " )")
         .call(d3.axisBottom(tmp_xScale))
         .style("font-size", "10px");
-    svg.selectAll("myrect-corr-data")
+    svg.selectAll("myrect-prop-data")
         .data(prop_data_mixed)
         .enter()
         .append("text")
@@ -1972,7 +1998,7 @@ function initializePropData() {
             for (let j = 0; j < (i % 3); ++j) {
                 tmp += linear_func(prop_data_mixed[3 * Math.floor(i / 3) + j]);
             }
-            // console.log(tmp)
+            // // console.log(tmp)
             return svg_settings['height'] - linear_func(sums[Math.floor(i / 3)])
                 + tmp -
                 rect_settings['bottom'] - 3;
@@ -2001,7 +2027,7 @@ function initializePropData() {
         .attr("y", function (d, i) {
             return rect_settings["upper"] + i * 30;
         })
-        .attr("fill", function (d, i) { return corr_color1[i % 3] });
+        .attr("fill", function (d, i) { return prop_color1[i % 3] });
     svg.selectAll("legend")
         .data(legend_keys)
         .enter()
@@ -2018,7 +2044,256 @@ function initializePropData() {
 }
 
 function initializeLocData() {
-    console.log("initializing loc data");
+    // console.log("initializing loc data");
+    var svg_settings = {
+        width: 1500,
+        height: 800,
+    };
+    var rect_settings0 = {
+        leftmargin: 100,
+        upper: 100,
+        bottom: 100,
+        width: 50,
+        space: 15,
+    };
+    var loc_color0 = ['#F9B7B0', '#F9DEB0', '#E8F9B0', '#B0F9D3',
+        '#B0E5F9', '#B0C5F9', '#CBB0F9', '#F9B0ED']
+
+    var svg0 = d3.select("body")     //选择文档中的body元素
+        .append("svg")          //添加一个svg元素
+        .attr("width", svg_settings['width'])       //设定宽度
+        .attr("height", svg_settings['height'])    //设定高度
+        .attr("style", "text-align:center; display: none")
+        .attr("id", "loc_data")
+        .style("clear", "both");
+    var loc_data_mixed0 = [];
+    var multiply0 = [];
+    var tmp_cnt0 = 0;
+    var sums0 = [];
+    var legend_keys = [];
+    for (key2 in all_data['loc_data']) {
+        legend_keys.push(key2);
+        let item = all_data['loc_data'][key2]
+        for (key in all_keys) {
+            // console.log(item)
+            // console.log(all_keys[key])
+            loc_data_mixed0.push(item[all_keys[key] + "项数"]);
+            multiply0.push(Math.floor(tmp_cnt0 / 8));
+            tmp_cnt0 += 1;
+        }
+        sums0.push(item["合计项数"]);
+    }
+    var linear_func0 = d3.scaleLinear()
+        .domain([0, d3.max(sums0)])
+        .range([0, svg_settings['height'] - rect_settings0['upper'] - rect_settings0['bottom']]);
+    var yScale0 = d3.scaleLinear()
+        .domain([0, d3.max(sums0)])
+        .range([svg_settings['height'] - rect_settings0['upper'] - rect_settings0['bottom'], 0]);
+    var yAxis0 = d3.axisLeft(yScale0);
+    var tmp_all_keys0 = [''].concat(legend_keys);
+    var tmp_scale_px0 = [0];
+    for (let i = 0; i < tmp_all_keys0.length - 1; ++i) {
+        tmp_scale_px0.push(10 + i * rect_settings0["width"] +
+            0.5 * (rect_settings0["width"] - rect_settings0['space']));
+    }
+    let tmp_xScale0 = d3.scaleOrdinal().range(tmp_scale_px0).domain(tmp_all_keys0);
+    // console.log(loc_data_mixed0);
+    svg0.selectAll("myrect-loc-data")
+        .data(loc_data_mixed0)
+        .enter()
+        .append("rect")
+        .attr("x", function (d, i) {
+            return rect_settings0["leftmargin"] + multiply0[i] * rect_settings0["width"];
+        })
+        .attr("y", function (d, i) {
+            let tmp = 0;
+            for (let j = 0; j < (i % 8); ++j) {
+                tmp += linear_func0(loc_data_mixed0[8 * Math.floor(i / 8) + j]);
+            }
+            // // console.log(tmp)
+            return svg_settings['height'] - linear_func0(sums0[Math.floor(i / 8)])
+                + tmp -
+                rect_settings0['bottom'];
+        })
+        .attr("width", rect_settings0["width"] - rect_settings0["space"])
+        .attr("height", function (d, i) {
+            return linear_func0(d);
+        })
+        .attr("fill", function (d, i) {
+            return loc_color0[i % 8];
+        })
+        .attr("class", "svg-DetailData-main")
+        .append("title")
+        .text(function (d, i) {
+            let key = legend_keys[Math.floor(i / 8)];
+            // console.log(all_data['loc_data'][key])
+            return JSON.stringify(all_data['loc_data'][key]);
+        });
+    svg0.append("g")
+        .attr("class", "locData_Yaxis")
+        .attr("transform",
+            "translate(" + (rect_settings0['leftmargin'] - 10) + "," + rect_settings0['upper'] + " )")
+        .call(yAxis0);
+    svg0.append("g")
+        .attr("class", "modal_Xaxis")
+        .attr("transform",
+            "translate(" + (rect_settings0['leftmargin'] - 10) + "," +
+            (svg_settings["height"] - rect_settings0['bottom']) + " )")
+        .call(d3.axisBottom(tmp_xScale0))
+        .style("font-size", "10px");
+    svg0.append("text")
+        .attr("x", rect_settings0["leftmargin"] - 40)
+        .attr("y", rect_settings0["upper"] - 20)
+        .text("项数(个)")
+        .style("font-size", "15px")
+        .attr("alignment-baseline", "bottom")
+    svg0.selectAll("legend")
+        .data(all_keys)
+        .enter()
+        .append("rect")
+        .attr("class", "lagend_rect")
+        .attr("width", 60)
+        .attr("height", 20)
+        .attr("x", svg_settings["width"] - 300)
+        .attr("y", function (d, i) {
+            return rect_settings0["upper"] + i * 30;
+        })
+        .attr("fill", function (d, i) { return loc_color0[i % 8] })
+        .style("cursor", "pointer")
+        .attr("onclick", function (d, i) {
+            return ("handleLocClick(" + i + ")");
+        });
+    svg0.selectAll("legend")
+        .data(all_keys)
+        .enter()
+        .append("text")
+        .attr("class", "lagend_text")
+        .attr("width", 60)
+        .attr("height", 20)
+        .attr("x", svg_settings["width"] - 220)
+        .attr("y", function (d, i) {
+            return rect_settings0["upper"] + i * 30 + 10;
+        })
+        .text(function (d) { return d })
+        .attr("alignment-baseline", "middle")
+        .style("cursor", "pointer")
+        .attr("onclick", function (d, i) {
+            return ("handleLocClick(" + i + ")");
+        });
+    for (key_i in all_keys) {
+        let key = all_keys[key_i];
+        var local_settings = {
+            upper: 50,
+            bottom: 50,
+            left: 50,
+            right: 50,
+        }
+        var rect_settings = {
+            width: 20,
+            space: 4,
+        }
+        var item = all_data['loc_data'];
+        // // console.log(d3.selectAll("#DetailData-Modal"))
+        var modal_svg = d3.select("#DetailData-Modal").select("div")
+            .append("svg")          //添加一个svg元素
+            .attr("width", 550)       //设定宽度
+            .attr("height", 550)    //设定高度
+            .attr("style", "text-align: center; display: none")
+            .attr("id", "LocData-Modal" + key)
+            .attr("class", "LocData-Modal");
+        var modal_mixed = [];
+        for (key2 in item) {
+            modal_mixed.push(item[key2][key + "项数"])
+        }
+        console.log(modal_mixed)
+        rect_settings['max'] = d3.max(loc_data_mixed0);
+        rect_settings['left-margin'] = (550 - rect_settings['width'] * modal_mixed.length) / 2
+        rect_settings['scale_func'] = d3.scaleLinear()
+            .domain([0, rect_settings['max']])
+            .range([0, 550 - local_settings['upper'] - local_settings['bottom']]);
+        rect_settings['yScale'] = d3.scaleLinear()
+            .domain([0, rect_settings['max']])
+            .range([550 - local_settings['upper'] - local_settings['bottom'], 0]);
+        rect_settings['yAxis'] = d3.axisLeft(rect_settings['yScale']);
+        rect_settings['px_scale'] = [0];
+        for (let i = 0; i < legend_keys.length; ++i) {
+            rect_settings['px_scale']
+                .push(5 + (i + 0.5) * rect_settings['width'] - 0.5 * rect_settings['space']);
+        }
+        // // console.log(rect_settings['px_scale'])
+        // // console.log(key2s)
+        let tmp_xScale = d3.scaleOrdinal().range(rect_settings['px_scale']).domain([''].concat(legend_keys));
+        rect_settings['xAxis'] = d3.axisBottom(tmp_xScale);
+        modal_svg.append("text")
+            .attr("x", 10)
+            .attr("y", 10)
+            .text("\"" + key + "\"" + "项数地区明细")
+            .style("font-size", "15px")
+            .attr("alignment-baseline", "middle");
+        modal_svg.selectAll("myrect" + key)
+            .data(modal_mixed)
+            .enter()
+            .append("rect")
+            .attr("x", function (d, i) {
+                return (rect_settings['left-margin'] + i * rect_settings['width']);
+            })
+            .attr("y", function (d, i) {
+                return 550 - rect_settings['scale_func'](d) - local_settings['bottom'];
+            })
+            .attr("width", rect_settings['width'] - rect_settings['space'])
+            .attr("height", function (d, i) {
+                return rect_settings['scale_func'](d);
+            })
+            .attr("fill", function (d, i) {
+                return '#5DC0E1';
+            })
+            .attr("class", "svg-LocData-main" + key)
+            .append("title")
+            .text(function (d, i) {
+                return (legend_keys[i] + ": " + d);
+            });
+        modal_svg.selectAll("myrect" + key)
+            .data(modal_mixed)
+            .enter()
+            .append("text")
+            .attr("class", "numbers")
+            .attr("transform",
+                "translate(" + rect_settings['left-margin'] + "," + local_settings['upper'] + ")")
+            .attr("x", function (d, i) {
+                return i * rect_settings['width'] + 5;
+            })
+            .attr("y", function (d) {
+                return rect_settings['yScale'](d) - 5;
+            })
+            .attr("alignment-baseline", "middle")
+            .text(function (d) {
+                return d;
+            })
+            .style("font-size", "10px");
+        modal_svg.append("g")
+            .attr("class", "modal_Yaxis")
+            .attr("transform",
+                "translate(" + (rect_settings['left-margin'] - 5) + "," + local_settings['upper'] + " )")
+            .call(rect_settings['yAxis']);
+        modal_svg.append("g")
+            .attr("class", "modal_Xaxis")
+            .attr("transform",
+                "translate(" + (rect_settings['left-margin'] - 5) + "," + (550 - local_settings['bottom']) + " )")
+            .call(rect_settings['xAxis'])
+            .style("font-size", "6px");
+        modal_svg.append("text")
+            .attr("x", rect_settings['left-margin'] - 35).attr("y", local_settings["upper"] - 3)
+            .text("项数(个)")
+            .style("font-size", "10px")
+            .attr("alignment-baseline", "bottom")
+    }
+}
+
+function handleLocClick(i) {
+    let key = all_keys[i];
+    var modal = document.getElementById('DetailData-Modal');
+    modal.style.display = 'block';
+    d3.select("#LocData-Modal" + key).style("display", "block");
 }
 
 function initializeData() {
