@@ -1129,7 +1129,7 @@ function initializeDetailData() {
     var min = d3.min(detailed_data_mixed);
     var max = d3.max(detailed_data_mixed);
     var yScale = d3.scaleLinear()
-        .domain([min, max])
+        .domain([0, max])
         .range([height - upper - bottom, 0]);
 
     var linear_all = d3.scaleLinear()
@@ -1182,7 +1182,10 @@ function initializeDetailData() {
         .attr("class", "svg-DetailData-main")
         .attr("onclick", function (d, i) {
             return "handleclick(" + i + ")";
-        });
+        })
+        .style("cursor", "pointer")
+        .append("title")
+        .text("点击查看详情");
     svg.selectAll("myrect")
         .data(detailed_data_mixed)
         .enter()
@@ -1197,9 +1200,7 @@ function initializeDetailData() {
             return ((i % 2 == 0) ? i * rectHeight : (i * rectHeight - 10)) + tmp;
         })
         .attr("y", function (d) {
-            let tmp = 0;
-            if (d < 100) tmp = 5;
-            return yScale(d) - 10 - tmp;
+            return yScale(d) - 10;
         })
         .attr("alignment-baseline", "middle")
         .text(function (d) {
@@ -1269,7 +1270,13 @@ function initializeDetailData() {
         var modal_all = [];
         var modal_pass = [];
         var modal_mixed = [];
+        var key2s = [''];
+        var all_key2s = [];
         for (key2 in item) {
+            let tmp_key2 = key2;
+            if (key2.length > 5) tmp_key2 = key2.substr(0, 3) + '...';
+            all_key2s.push(key2);
+            key2s.push(tmp_key2);
             modal_all.push(item[key2]['受理项数']);
             modal_mixed.push(item[key2]['受理项数']);
             modal_pass.push(item[key2]['批准项数']);
@@ -1284,12 +1291,25 @@ function initializeDetailData() {
         rect_settings['scale_func'] = d3.scaleLinear()
             .domain([0, rect_settings['max']])
             .range([0, 550 - local_settings['upper'] - local_settings['bottom']]);
+        rect_settings['yScale'] = d3.scaleLinear()
+            .domain([0, rect_settings['max']])
+            .range([550 - local_settings['upper'] - local_settings['bottom'], 0]);
+        rect_settings['yAxis'] = d3.axisLeft(rect_settings['yScale']);
+        rect_settings['px_scale'] = [0];
+        for (let i = 0; i < key2s.length - 1; ++i) {
+            rect_settings['px_scale']
+                .push(5 + (2 * i + 1) * rect_settings['width'] - rect_settings['space']);
+        }
+        console.log(rect_settings['px_scale'])
+        console.log(key2s)
+        let tmp_xScale = d3.scaleOrdinal().range(rect_settings['px_scale']).domain(key2s);
+        rect_settings['xAxis'] = d3.axisBottom(tmp_xScale);
         modal_svg.append("text")
             .attr("x", 10)
             .attr("y", 10)
             .text("\"" + key + "\"" + "资金明细")
             .style("font-size", "15px")
-            .attr("alignment-baseline", "middle")
+            .attr("alignment-baseline", "middle");
         modal_svg.selectAll("myrect" + key)
             .data(modal_mixed)
             .enter()
@@ -1297,8 +1317,8 @@ function initializeDetailData() {
             .attr("x", function (d, i) {
                 return (rect_settings['left-margin'] +
                     ((i % 2 == 0) ?
-                        (i * rect_settings['width'] - rect_settings['space'])
-                        : (i * rect_settings['width'] - 2 * rect_settings['space'])));
+                        (i * rect_settings['width'])
+                        : (i * rect_settings['width'] - rect_settings['space'])));
             })
             .attr("y", function (d, i) {
                 return 550 - rect_settings['scale_func'](d) - local_settings['bottom'];
@@ -1310,11 +1330,43 @@ function initializeDetailData() {
             .attr("fill", function (d, i) {
                 return color[i % 2];
             })
-            .attr("class", "svg-DetailData-main" + key);
+            .attr("class", "svg-DetailData-main" + key)
+            .append("title")
+            .text(function (d, i) {
+                return all_key2s[Math.floor(i / 2)];
+            });
+        modal_svg.selectAll("myrect" + key)
+            .data(modal_mixed)
+            .enter()
+            .append("text")
+            .attr("class", "mytext")
+            .attr("transform",
+                "translate(" + rect_settings['left-margin'] + "," + local_settings['upper'] + ")")
+            .attr("x", function (d, i) {
+                return ((i % 2 == 0) ? i * rect_settings['width']
+                    : i * rect_settings['width'] - rect_settings['space']);
+            })
+            .attr("y", function (d) {
+                return rect_settings['yScale'](d) - 8;
+            })
+            .attr("alignment-baseline", "middle")
+            .text(function (d) {
+                return d;
+            });
+        modal_svg.append("g")
+            .attr("class", "modal_Yaxis")
+            .attr("transform",
+                "translate(" + (rect_settings['left-margin'] - 5) + "," + local_settings['upper'] + " )")
+            .call(rect_settings['yAxis']);
+        modal_svg.append("g")
+            .attr("class", "modal_Xaxis")
+            .attr("transform",
+                "translate(" + (rect_settings['left-margin'] - 5) + "," + (550 - local_settings['bottom']) + " )")
+            .call(rect_settings['xAxis'])
+            .style("font-size", "10px");
     }
 }
 
 function initializeData() {
-
     initializeDetailData();
 }
